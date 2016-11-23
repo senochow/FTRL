@@ -5,10 +5,10 @@
 * 
 * ###########################################################################
 * Brief: 
- 
+    Lazy mode, no need to save w
 * Authors: zhouxing(@ict.ac.cn)
 * Date:    2016/11/23 09:29:17
-* File:    ftrl.h
+* File:    ftrl_v2.h
 */
 #ifndef FTRL_H_
 #define FTRL_H_

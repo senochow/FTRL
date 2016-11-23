@@ -45,7 +45,7 @@ inline void splitString(const string& s, char c, vector<string>& vec) {
     }
 }
 
-int getHash(string& name, int dim) {
+inline int getHash(string& name, int dim) {
     unsigned long long hash = 0;
     for (size_t i = 0; i < name.size(); i++) {
         hash = hash*257 + name[i];

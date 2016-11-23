@@ -9,7 +9,7 @@
 * Date:    2016/11/23 10:23:06
 * File:    libftrl.cpp
 */
-#include "ftrl.h"
+#include "ftrl_v1.h"
 #include <fstream>
 #include <ctime>
 #include <sys/timeb.h>
@@ -117,8 +117,11 @@ int main(int argc, char **argv) {
     if ((i = ArgPos((char *)"-train", argc, argv)) > 0) trainfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-test", argc, argv)) > 0) testfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-output", argc, argv)) > 0) outputfile = string(argv[i + 1]);
-    FTRL* ftrl = new FTRL(0.05, 1.0, 0.01, 1.0, dim);
-    ftrl_learn(ftrl, trainfile);
+    FTRL* ftrl = new FTRL(0.05, 1.0, 1, 1.0, dim);
+    int epochs = 3;
+    for (int i = 0; i < epochs; i++) {
+        ftrl_learn(ftrl, trainfile);
+    }
     ftrl_prediction(ftrl, testfile, outputfile);
     return 0;
 }
