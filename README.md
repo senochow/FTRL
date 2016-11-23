@@ -1,1 +1,1 @@
-# FTRLImplemention of FTRL: Follow the regularized leader - proximal Reference : Ad Click Prediction: a View from the Trenches
+# FTRLImplemention of FTRL: Follow the regularized leader - proximal Reference : Ad Click Prediction: a View from the Trenches#Defalut ExperimentData from [Click-Through Rate Prediction](https://www.kaggle.com/c/avazu-ctr-prediction)
