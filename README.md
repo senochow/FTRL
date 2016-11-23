@@ -1,1 +1,1 @@
-# FTRL
+# FTRLImplemention of FTRL: Follow the regularized leader - proximal Reference : Ad Click Prediction: a View from the Trenches
