@@ -16,8 +16,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
-#include <cmath>
-
+#include "util.h"
 using namespace std;
 
 
@@ -30,7 +29,6 @@ class FTRL {
         double L1;
         double L2;
 
-        int dim;
         // squared sum of past gradients
         vector<double> n;
         // weights z
@@ -39,9 +37,10 @@ class FTRL {
         // vector<double> w;
         unordered_map<int, double> w;
     public:
+        int dim;
         FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim);
-        double predict(vector<int> x);
-        double update(vector<int> x, double p, int y);
+        double predict(vector<int>& x);
+        void update(vector<int>& x, double p, int y);
 };
 
 FTRL::FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim) {
@@ -54,25 +53,34 @@ FTRL::FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim) {
     z = vector<double>(dim, 0);
 }
 
-double FTRL::predict(vector<int> x) {
+double FTRL::predict(vector<int>& x) {
     double wTx = 0;
     unordered_map<int, double> _w;
-    for (size_t i = 0; i < x.size(); i++) {
+    for (int i: x) {
         // update weight w in prediction stage, lazy weights
-        int sign = (z[x[i]] < 0) ? -1: 1;
-        if (sign*z[x[i]] <= L1) {
-            _w[x[i]] = 0;
+        int sign = sgn(z[i]);
+        if (sign*z[i] <= L1) {
+            _w[i] = 0;
         } else {
-            _w[x[i]] = (sign*L1 - z[x[i]]) / ((beta + sqrt(n[x[i]]))/alpha + L2);
+            _w[i] = (sign*L1 - z[i]) / ((beta + sqrt(n[i]))/alpha + L2);
         }
-        wTx += _w[x[i]];
+        wTx += _w[i];
     }
     // cache current w for update stage
     w = _w;
     // sigmoid function
-    return 1.0/(1.0 + exp(-wTx));
+    return sigmoid(wTx);
 }
 
-
+// update model parameters using one instance
+void FTRL::update(vector<int>& x, double p, int y) {
+    double g = p - y;  //x equals 1
+    // update z and n
+    for (int i: x) {
+        double sigma = (sqrt(n[i] + g*g) - sqrt(n[i])) / alpha;
+        z[i] += g - sigma*w[i];
+        n[i] += g*g;
+    }
+}
 
 #endif  // FTRL_H_
