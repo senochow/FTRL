@@ -39,18 +39,20 @@ class FTRL {
         vector<double> w;
     public:
         int dim;
-        FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim);
+        bool interaction;
+        FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim, bool _interaction);
         double predict(vector<int>& x);
         void update(vector<int>& x, double p, int y);
         void saveModel(string filename);
 };
 
-FTRL::FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim) {
+FTRL::FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim, bool _interaction) {
     alpha = _alpha;
     beta = _beta;
     L1 = _L1;
     L2 = _L2;
     dim = _dim;
+    interaction = _interaction;
     n = vector<double>(dim, 0);
     z = vector<double>(dim, 0);
     w = vector<double>(dim, 0);

@@ -12,24 +12,47 @@
 #include "ftrl_v1.h"
 #include <ctime>
 #include <sys/timeb.h>
+#include <algorithm>
+
+vector<int> getIndex(vector<string>& keys, vector<string>& vals, FTRL* ftrl, int beg) {
+    vector<int> x;
+    // bias term
+    x.push_back(0);
+    // w * x
+    size_t n = keys.size();
+    for (size_t i = beg; i < n; i++) {
+        string key = keys[i] + "_" + vals[i];
+        int value = getHash(key, ftrl->dim);
+        x.push_back(value);
+    }
+    // sort x indexs, get interaction index
+    sort(x.begin(), x.end());
+    n = x.size();
+    if (ftrl->interaction) {
+        for (size_t i = 1; i < n; i++) {
+            for (size_t j = i+1; j < n-1; j++) {
+                string key = to_string(x[i]) + "_" + to_string(x[j]);
+                int value = getHash(key, ftrl->dim);
+                x.push_back(value);
+            }
+        }
+            
+    }
+    return x;
+}
 
 struct Instance {
     vector<int> x;
     int y;
     string id;
     int date;
-    Instance(vector<string>& feas, vector<string>& keyname, int dim) {
+    Instance(vector<string>& feas, FTRL* ftrl, vector<string>& keyname) {
         id = feas[0];
         y = stoi(feas[1]);
         date = stoi(feas[2].substr(4, 2));
         feas[2] = feas[2].substr(6);
-        for (size_t i = 2; i < feas.size(); i++) {
-            string key = keyname[i] + "_" + feas[i];
-            int value = getHash(key, dim);
-            x.push_back(value);
-        }
+        x = getIndex(keyname, feas, ftrl, 2);
     }
-
 };
 
 
@@ -48,7 +71,7 @@ void ftrl_learn(FTRL* ftrl, string trainfile) {
     while (getline(fin, line)) {
         vector<string> feas;
         splitString(line, ',', feas);
-        Instance inst(feas, keyname, ftrl->dim);
+        Instance inst(feas, ftrl, keyname);
         local_cnt++;
         if (local_cnt % 1000000 == 0) {
             cout << "train " << local_cnt << endl;
@@ -87,11 +110,7 @@ void ftrl_prediction(FTRL* ftrl, string testfile, string resfile) {
         feas[1] = feas[1].substr(6);
         vector<int> x;
         // test feature start from index 1
-        for (size_t i = 1; i < feas.size(); i++) {
-            string key = keyname[i] + "_" + feas[i];
-            int value = getHash(key, ftrl->dim);
-            x.push_back(value);
-        }
+        x = getIndex(keyname, feas, ftrl, 1);
         double p = ftrl->predict(x);
         fout << feas[0] << "," << p << endl;
     }
@@ -110,14 +129,16 @@ int main(int argc, char **argv) {
         info();
         return 0;
     }
-    double dim = pow(10, 6);
+    double dim = pow(2, 26);
+    bool interaction = true;
     string trainfile, testfile, outputfile, modelfile;
     int i;
     if ((i = ArgPos((char *)"-train", argc, argv)) > 0) trainfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-test", argc, argv)) > 0) testfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-output", argc, argv)) > 0) outputfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-model", argc, argv)) > 0) modelfile = string(argv[i + 1]);
-    FTRL* ftrl = new FTRL(0.05, 1.0, 1, 1.0, dim);
+    if ((i = ArgPos((char *)"-2d", argc, argv)) > 0) interaction = stoi(argv[i + 1]);
+    FTRL* ftrl = new FTRL(0.05, 1.0, 1, 1.0, dim, interaction);
     int epochs = 1;
     for (int i = 0; i < epochs; i++) {
         ftrl_learn(ftrl, trainfile);
