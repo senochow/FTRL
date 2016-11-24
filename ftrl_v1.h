@@ -15,6 +15,7 @@
 #define FTRL_H_
 
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 #include <vector>
 #include "util.h"
@@ -41,6 +42,7 @@ class FTRL {
         FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim);
         double predict(vector<int>& x);
         void update(vector<int>& x, double p, int y);
+        void saveModel(string filename);
 };
 
 FTRL::FTRL(double _alpha, double _beta, double _L1, double _L2, int _dim) {
@@ -80,5 +82,13 @@ void FTRL::update(vector<int>& x, double p, int y) {
         }
     }
 }
-
+void FTRL::saveModel(string filename) {
+    ofstream fout(filename, ios::out);
+    for (size_t i = 0; i < w.size(); i++) {
+        if (abs(w[i]) > 1e-15) {
+            fout << i << " " << w[i] << endl;
+        }
+    }
+    fout.close();
+}
 #endif  // FTRL_H_

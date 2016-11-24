@@ -10,7 +10,6 @@
 * File:    libftrl.cpp
 */
 #include "ftrl_v1.h"
-#include <fstream>
 #include <ctime>
 #include <sys/timeb.h>
 
@@ -111,18 +110,20 @@ int main(int argc, char **argv) {
         info();
         return 0;
     }
-    double dim = pow(2, 26);
-    string trainfile, testfile, outputfile;
+    double dim = pow(10, 6);
+    string trainfile, testfile, outputfile, modelfile;
     int i;
     if ((i = ArgPos((char *)"-train", argc, argv)) > 0) trainfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-test", argc, argv)) > 0) testfile = string(argv[i + 1]);
     if ((i = ArgPos((char *)"-output", argc, argv)) > 0) outputfile = string(argv[i + 1]);
+    if ((i = ArgPos((char *)"-model", argc, argv)) > 0) modelfile = string(argv[i + 1]);
     FTRL* ftrl = new FTRL(0.05, 1.0, 1, 1.0, dim);
-    int epochs = 3;
+    int epochs = 1;
     for (int i = 0; i < epochs; i++) {
         ftrl_learn(ftrl, trainfile);
     }
     ftrl_prediction(ftrl, testfile, outputfile);
+    ftrl->saveModel(modelfile);
     return 0;
 }
 
