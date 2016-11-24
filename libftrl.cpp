@@ -121,7 +121,7 @@ void ftrl_prediction(FTRL* ftrl, string testfile, string resfile) {
     cout << "Cost time : " << cost_sec/60 << " m " << cost_sec%60 <<" s"<< endl;
 }
 void info() {
-    cout << "./libftrl -trainfile trainfile -testfile testfile -output output" << endl;
+    cout << "./libftrl -trainfile trainfile -testfile testfile -output output -model modelfile -2d 1" << endl;
 }
 
 int main(int argc, char **argv) {
