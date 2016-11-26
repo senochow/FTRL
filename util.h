@@ -16,6 +16,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include "data.h"
 using namespace std;
 
 
@@ -44,7 +45,31 @@ inline void splitString(const string& s, char c, vector<string>& vec) {
         }
     }
 }
-
+inline bool parseFeatureLine(const string& s, int& label, vector<Entry>& feas) {
+    size_t i = 0;
+    char c = ' ';
+    size_t j = s.find(c);
+    if (j != string::npos) {
+        label = stoi(s.substr(i, j-i));
+        i = ++j;
+        j = s.find(c, j);
+    }else {
+        cout << "Error Line" << endl;
+        return false;
+    }
+    // parse feature
+    while (j != string::npos) {
+        Entry entry(s.substr(i, j-i), ':');
+        feas.push_back(entry);
+        i = ++j;
+        j = s.find(c, j);
+        if (j == string::npos) {
+            Entry entry(s.substr(i), ':');
+            feas.push_back(entry);
+        }
+    }
+    return true;
+}
 inline int getHash(string& name, int dim) {
     unsigned long long hash = 0;
     for (size_t i = 0; i < name.size(); i++) {
